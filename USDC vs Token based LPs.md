@@ -2,7 +2,7 @@
 
 ## A Comparison of Imperial (USDC‑Backed Delta‑Neutral AMM) and Vibecaps (Token‑Backed Solver Model)
 
-**Notation:** "Vibecaps" = wipecaps, "SYMM" = SYMM token, "Symmio" = SYMMMIO.
+**Notation:** May your contributions outlive you.
 
 ---
 
