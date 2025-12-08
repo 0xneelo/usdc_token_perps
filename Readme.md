@@ -258,15 +258,26 @@ From Imperial's own risk model:
 - "Long attack" and "short attack" scenarios exploit the delta‑neutral hedging mechanism itself.
 - Backstop funds are correlated with the underlying asset (they are effectively long), so they lose value exactly when needed most.
 
+**Critical Insight:** Price manipulation attacks are **not probabilistic events**. They are **economic games** where attackers will execute whenever profitable. If the cost to manipulate price is less than the profit from creating bad debt, attacks will occur.
+
 For USDC LPs, we can decompose expected annual protocol loss:
 
 ```
 EL_I = Σ_j (p_j · L_j)
 ```
 
-where *p_j* is the probability of risk event *j* (exploit, pump‑and‑dump, oracle games, liquidation failure, backstop failure, etc.), and *L_j* is the loss severity as a fraction of capital.
+where for most events *p_j* represents frequency/probability, but for **price manipulation attacks**, *p_j* reflects the frequency with which market conditions make attacks profitable (not a random probability). *L_j* is the loss severity as a fraction of capital.
 
-A stylized but reasonable band, given low‑cap perps on fast chains, is:
+**Attack Profitability Condition:**
+- Attacks occur when: `Bad Debt Extracted - Cost to Manipulate Price > 0`
+- For low-cap tokens: Thin liquidity = low manipulation cost ($10K-$50K)
+- High OI relative to liquidity = large bad debt potential ($100K-$1M+)
+- **Result:** Attacks are profitable whenever OI exceeds manipulation cost, which is frequently the case for low-cap tokens
+
+**Expected Loss Breakdown:**
+- **Price manipulation attacks:** 15-25% per year (economic incentive-based, not probabilistic)
+- **Other operational risks:** 5-10% per year (oracle manipulation, liquidation failures, etc.)
+- **Correlation/cascading effects:** 10-15% per year
 
 **Total expected protocol loss:** *EL_I* ≈ 30%–50% of USDC per year.
 
@@ -293,12 +304,11 @@ graph TD
   end
 
   subgraph Risk Layer
-    E --> F1["Instant Pump (1000x in 1 block)"]
-    E --> F2["Instant Dump (→ 0 in 1 block)"]
-    E --> F3[Oracle Manipulation]
-    D --> F4[Net‑Short / Net‑Long Imbalances]
-    C --> F5["Liquidation Latency\n& Keeper Failure"]
-    B --> F6[Backstop Correlation Risk]
+    E --> F1["Price Manipulation Attack\n(Economic incentive-based)"]
+    E --> F2["Oracle Manipulation"]
+    D --> F3[Net‑Short / Net‑Long Imbalances]
+    C --> F4["Liquidation Latency\n& Keeper Failure"]
+    B --> F5[Backstop Correlation Risk]
   end
 
   F1 --> G[Bad Debt]
@@ -306,7 +316,6 @@ graph TD
   F3 --> G
   F4 --> G
   F5 --> G
-  F6 --> G
 
   G --> H[Losses to Backstop Fund]
   H --> I[Residual Losses to USDC LPs]
@@ -462,9 +471,9 @@ which strengthens the qualitative conclusion: the 93× figure is conservative; u
 
 To attract USDC LPs and market backers, Imperial must offer APR high enough to compensate for:
 
-- Expected annual protocol loss (30–50%),
-- Tail risk premium for large‑severity events,
-- Opportunity cost of holding USDC in a high‑risk protocol.
+- **Expected annual protocol loss (30–50%)**,
+- **Adverse Selection Risk Premium (45-90%)** – compensating for the fact that attacks are targeted/certain when profitable, not random,
+- **Opportunity cost** of holding USDC in a high‑risk protocol.
 
 A plausible equilibrium APR is:
 
@@ -519,7 +528,7 @@ This alignment reduces the required explicit APR and makes the system more robus
 
 The analysis here is intentionally stylized:
 
-- Exact probabilities and loss severities (*p_j*, *L_j*) are not empirically estimated; they are scenario‑based.
+- Expected loss estimates (*EL_I* ≈ 30-50%) are scenario-based, with price manipulation attacks modeled as economic incentive-based (not purely probabilistic).
 - Smart‑contract and oracle risks exist for both architectures.
 - Vibecaps still needs careful design of funding rates, inventory management and liquidation logic to avoid solver insolvency.
 - In extreme conditions (e.g. SYMM → 0 overnight), SYMM stakers lose value irrespective of protocol design; Vibecaps does not "remove" risk, it concentrates it back where it belongs: with token holders.
@@ -532,7 +541,7 @@ Nonetheless, the qualitative conclusion is robust: any architecture that relies 
 
 We formalized and compared the risk and capital structures of:
 
-- **Imperial** – a delta‑neutral, USDC‑backed perp protocol requiring LP deposits and a 4% OI backstop in USDC, yielding system leverage ≈0.8× and implying high required APR (80–150%) for USDC LPs given 30–50% expected protocol loss.
+- **Imperial** – a delta‑neutral, USDC‑backed perp protocol requiring LP deposits and a 4% OI backstop in USDC, yielding system leverage ≈0.8× and implying high required APR (80–150%) for USDC LPs given 30–50% expected protocol loss (driven largely by economically incentivized price manipulation attacks on low-cap tokens).
 
 - **Vibecaps** – a token‑backed, solver‑based perpetual model where SYMM inventory from projects/whales supports leverage of 5–10× without requiring structural USDC backstops. SYMM stakers already bear token risk and can rationally accept much lower explicit APR (5–10%).
 
@@ -543,7 +552,7 @@ Combining:
 
 Vibecaps achieves an estimated 93× higher risk‑adjusted capital efficiency than Imperial.
 
-Intuitively: Imperial asks external hard capital to underwrite catastrophic tail risk on thin markets; Vibecaps internalizes that risk to aligned token holders and uses a solver to net flows and hedge dynamically.
+Intuitively: Imperial asks external hard capital to underwrite catastrophic tail risk on thin markets, where price manipulation attacks are economically incentivized whenever profitable; Vibecaps internalizes that risk to aligned token holders and uses a solver to net flows and hedge dynamically.
 
 From the standpoint of protocol design for low‑cap perps, this suggests that native‑token, inventory‑based architectures are vastly more sustainable than externally‑collateralized delta‑neutral ones, at least once one accounts properly for protocol risk and required LP APRs.
 
@@ -565,7 +574,7 @@ One participant summarized it as:
 
 **By contrast,** the same conversation characterized the Imperial‑style USDC LP position as:
 
-- involving a very high probability of large or total loss ("they must assume ~90% total‑loss chance"), and
+- involving structurally incentivized attacks that create large or total loss ("they must assume ~90% total‑loss chance"), and
 - requiring LPs to deposit hard USDC, not native tokens.
 
 One participant's intuition was that:
