@@ -2,7 +2,7 @@
 
 ## A Comparison of Imperial (USDC‑Backed Delta‑Neutral AMM) and Vibecaps (Token‑Backed Solver Model)
 
-**Notation:** May your contributions outlive you.
+**Notation:** May your contributionsimage.png outlive you.
 
 ---
 
@@ -293,11 +293,11 @@ graph TD
   end
 
   subgraph Risk Layer
-    E --> F1[Instant Pump (1000x in 1 block)]
-    E --> F2[Instant Dump (→ 0 in 1 block)]
+    E --> F1["Instant Pump (1000x in 1 block)"]
+    E --> F2["Instant Dump (→ 0 in 1 block)"]
     E --> F3[Oracle Manipulation]
     D --> F4[Net‑Short / Net‑Long Imbalances]
-    C --> F5[Liquidation Latency\n& Keeper Failure]
+    C --> F5["Liquidation Latency\n& Keeper Failure"]
     B --> F6[Backstop Correlation Risk]
   end
 
@@ -360,21 +360,21 @@ graph TD
   end
 
   subgraph Risk Layer
-    E --> R1[Order Flow Imbalance\n(Inventory Risk)]
+    E --> R1["Order Flow Imbalance\n(Inventory Risk)"]
     D --> R2[Model / Spread / Funding Error]
     F --> R3[External Exchange Risk]
     C --> R4[Protocol / Smart Contract Risk]
-    C --> R5[SYMM Market Risk\n(Token repricing)]
+    C --> R5["SYMM Market Risk\n(Token repricing)"]
   end
 
   R1 --> G[Solver PnL Volatility]
   R2 --> G
   R3 --> G
 
-  G --> H[Solver Capital Drawdown\n(not protocol‑wide insolvency)]
+  G --> H["Solver Capital Drawdown\n(not protocol‑wide insolvency)"]
 
   R4 --> I[Systemic Protocol Loss]
-  R5 --> J[SYMM Price Moves\n(borne by same holders either way)]
+  R5 --> J["SYMM Price Moves\n(borne by same holders either way)"]
 ```
 
 ---
