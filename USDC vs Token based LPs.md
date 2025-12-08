@@ -2,7 +2,7 @@
 
 ## A Comparison of Imperial (USDC‑Backed Delta‑Neutral AMM) and Vibecaps (Token‑Backed Solver Model)
 
-**Notation:** "Vibecaps" = wipecaps, "SIM" = SYMM token, "Symmio" = SIMMIO.
+**Notation:** "Vibecaps" = wipecaps, "SYMM" = SYMM token, "Symmio" = SYMMMIO.
 
 ---
 
@@ -16,7 +16,7 @@ This paper compares two architectures for offering leverage on illiquid, low‑c
 3. requires a permanently locked backstop fund proportional to open interest (OI).
 
 **Vibecaps** – a token‑backed system in which:
-1. projects or whales stake their own token (e.g. SIM),
+1. projects or whales stake their own token (e.g. SYMM),
 2. a solver/market‑maker uses that inventory plus short‑term USDC loans to hedge,
 3. no structural USDC backstop or locked insurance is required for the market to function.
 
@@ -71,24 +71,24 @@ Thus Imperial's core structural collateral is external hard capital (USDC) that 
 
 ### 2.2 Vibecaps: Token‑Backed Solver‑Based Perpetuals
 
-Vibecaps offers perps on a token (e.g. SIM) using a fundamentally different design:
+Vibecaps offers perps on a token (e.g. SYMM) using a fundamentally different design:
 
 **Token‑Native Collateral.**
 
-A project, treasury, whale or any holder deposits SIM tokens into a vault. This token inventory, not USDC, is the primary structural resource backing the market. There is no requirement to provide USDC backstop capital.
+A project, treasury, whale or any holder deposits SYMM tokens into a vault. This token inventory, not USDC, is the primary structural resource backing the market. There is no requirement to provide USDC backstop capital.
 
 **Solver / Market Maker.**
 
 A designated solver (or set of solvers) quotes perps for Symmio order flow using standard market‑making techniques:
 
 - netting long and short trader flows against each other,
-- using SIM inventory to hedge,
+- using SYMM inventory to hedge,
 - dynamically adjusting funding and spreads to steer the long/short ratio and inventory,
-- optionally buying/selling SIM in the spot market to rebalance.
+- optionally buying/selling SYMM in the spot market to rebalance.
 
 **Systemic Leverage via Inventory and Netting.**
 
-Because the solver nets opposing flows and uses SIM inventory rather than external USDC as the limiting resource, the system can support OI significantly larger than the marked‑to‑market value of the inventory (e.g. 5×, targeting up to 10×). This is "systemic leverage."
+Because the solver nets opposing flows and uses SYMM inventory rather than external USDC as the limiting resource, the system can support OI significantly larger than the marked‑to‑market value of the inventory (e.g. 5×, targeting up to 10×). This is "systemic leverage."
 
 **Insurance Fund (Optional/Non‑Binding).**
 
@@ -109,28 +109,28 @@ The solver may temporarily borrow USDC (or stables) to hedge specific exposures,
 
 Vibecaps is therefore synthetic and inventory‑based, rather than collateral‑locked like Imperial.
 
-Crucially, the economic risk is borne by token holders who already hold SIM and are fundamentally long the project. From their perspective, staking SIM in Vibecaps does not introduce the same kind of new external risk as staking USDC in Imperial.
+Crucially, the economic risk is borne by token holders who already hold SYMM and are fundamentally long the project. From their perspective, staking SYMM in Vibecaps does not introduce the same kind of new external risk as staking USDC in Imperial.
 
 ### 2.3 Architectural Comparison
 
 ```mermaid
 flowchart LR
-  subgraph Imperial (USDC‑Backed Perps)
-    A[USDC LPs] --> B[LP Pool (USDC)]
-    B --> C[Delta‑Neutral Engine\n(Trades vs AMM)]
-    C --> D[Trader Positions\n(Longs / Shorts)]
-    B --> E[Backstop / Insurance Fund\n(4% of Gross OI, locked)]
+  subgraph Imperial ["USDC-Backed Perps"]
+    A[USDC LPs] --> B["LP Pool (USDC)"]
+    B --> C["Delta-Neutral Engine\n(Trades vs AMM)"]
+    C --> D["Trader Positions\n(Longs / Shorts)"]
+    B --> E["Backstop / Insurance Fund\n(4% of Gross OI, locked)"]
     D -->|PnL, Liquidations| B
     D -->|Bad Debt| E
   end
 
-  subgraph Vibecaps (Token‑Backed Perps)
-    F[Project / Whales\nStake SIM Tokens] --> G[SIM Inventory Vault]
+  subgraph Vibecaps ["Token-Backed Perps"]
+    F["Project / Whales\nStake SYMM Tokens"] --> G[SYMM Inventory Vault]
     G --> H[Solver / Market Maker]
-    H --> I[Perp Market on Symmio\n(Longs / Shorts)]
+    H --> I["Perp Market on Symmio\n(Longs / Shorts)"]
     I -->|Netting Flow| H
-    H -->|Optional Spot Hedging\nShort‑Term USDC loans| J[(External Markets)]
-    I --> K[(Optional Insurance Buffer\nfrom Liquidations)]
+    H -->|"Optional Spot Hedging\nShort-Term USDC loans"| J[(External Markets)]
+    I --> K[("Optional Insurance Buffer\nfrom Liquidations")]
   end
 ```
 
@@ -188,11 +188,11 @@ That is, Imperial supports less than $1 of OI for every $1 of locked USDC. The s
 
 Let:
 
-- *T* = SIM token inventory deposited (valued in USDC),
+- *T* = SYMM token inventory deposited (valued in USDC),
 - *λ* = target system leverage (e.g. 5× or 10×),
 - *Q_V* = *λT* = gross OI supported.
 
-There is no structural backstop requirement in USDC, and SIM is already "native" to the project treasuries/whales. From a protocol‑level capital perspective, the only structural commitment is the SIM deposit itself.
+There is no structural backstop requirement in USDC, and SYMM is already "native" to the project treasuries/whales. From a protocol‑level capital perspective, the only structural commitment is the SYMM deposit itself.
 
 Structural capital:
 
@@ -239,7 +239,7 @@ graph LR
   end
 
   subgraph Vibecaps
-    V1[SIM Inventory T] --> V2[Structural Capital\nK_V = T]
+    V1[SYMM Inventory T] --> V2[Structural Capital\nK_V = T]
     V3[Gross OI Q_V = λ·T] --> V4[sysLev_V = Q_V / K_V = λ]
     V2 --> V4
   end
@@ -288,8 +288,8 @@ graph TD
   B --> C[Delta‑Neutral Engine]
 
   subgraph Market Dynamics
-    C --> D[Trader Positions\n(High‑Leverage Longs/Shorts)]
-    D --> E[Underlying AMM / Spot Market\n(Thin Liquidity, Low‑Cap Token)]
+    C --> D["Trader Positions\n(High-Leverage Longs/Shorts)"]
+    D --> E["Underlying AMM / Spot Market\n(Thin Liquidity, Low-Cap Token)"]
   end
 
   subgraph Risk Layer
@@ -312,29 +312,29 @@ graph TD
   H --> I[Residual Losses to USDC LPs]
 ```
 
-### 4.2 Vibecaps: Risk to SIM Stakers and Solver
+### 4.2 Vibecaps: Risk to SYMM Stakers and Solver
 
 For Vibecaps, the risk surface is different:
 
-- SIM providers (projects / whales) are already long SIM; staking SIM in Vibecaps primarily changes how their exposure manifests, not whether they are exposed.
-- Protocol or solver failure that hurts SIM value is correlated with the risk they already bear by holding SIM.
+- SYMM providers (projects / whales) are already long SYMM; staking SYMM in Vibecaps primarily changes how their exposure manifests, not whether they are exposed.
+- Protocol or solver failure that hurts SYMM value is correlated with the risk they already bear by holding SYMM.
 - Catastrophic IMP‑style bad debt in USDC is structurally absent; any residual short‑term hedging USDC is provided by the solver on a rolling basis rather than as a large, locked pool.
 
 The dominant risks are:
 
 - smart‑contract risk of the Vibecaps + Symmio stack,
 - market‑making error / risk for the solver,
-- oracle risk on SIM price feeds,
+- oracle risk on SYMM price feeds,
 - model risk in spreads and funding.
 
-For SIM stakers, we can define a required token‑denominated APR *r_V*, which will typically be much smaller than the USDC requirement *r_I*, because:
+For SYMM stakers, we can define a required token‑denominated APR *r_V*, which will typically be much smaller than the USDC requirement *r_I*, because:
 
-- The marginal risk of staking SIM vs simply holding SIM is relatively low.
-- The opportunity cost of SIM for the project/whale is not the same as opportunity cost of USDC for an external LP.
+- The marginal risk of staking SYMM vs simply holding SYMM is relatively low.
+- The opportunity cost of SYMM for the project/whale is not the same as opportunity cost of USDC for an external LP.
 
 A conservative band might be:
 
-**Required APR for SIM staking:** *r_V* ≈ 5%–10% (or even purely "strategic return" in form of deeper liquidity and price discovery, rather than explicit token APR).
+**Required APR for SYMM staking:** *r_V* ≈ 5%–10% (or even purely "strategic return" in form of deeper liquidity and price discovery, rather than explicit token APR).
 
 In your spreadsheet you encode this difference as a risk premium ratio:
 
@@ -342,21 +342,21 @@ In your spreadsheet you encode this difference as a risk premium ratio:
 r_I / r_V ≈ 15
 ```
 
-i.e. USDC capital demands roughly 15× the return of SIM capital. This is entirely plausible if *r_I* ~ 75%–150% vs *r_V* ~ 5%–10%.
+i.e. USDC capital demands roughly 15× the return of SYMM capital. This is entirely plausible if *r_I* ~ 75%–150% vs *r_V* ~ 5%–10%.
 
 **Risk Flow Diagram for Vibecaps:**
 
 ```mermaid
 graph TD
-  A[Project / Whales\nHold SIM] --> B[Stake SIM in Vibecaps]
-  B --> C[SIM Inventory Vault]
+  A["Project / Whales\nHold SYMM"] --> B[Stake SYMM in Vibecaps]
+  B --> C[SYMM Inventory Vault]
 
   C --> D[Solver / Market Maker]
-  D --> E[Perp Market\n(Longs / Shorts via Symmio)]
+  D --> E["Perp Market\n(Longs / Shorts via Symmio)"]
   E --> D
 
   subgraph Solver Hedging
-    D --> F[Spot / Perp Hedges\nShort‑Term USDC / Other Assets]
+    D --> F["Spot / Perp Hedges\nShort-Term USDC / Other Assets"]
   end
 
   subgraph Risk Layer
@@ -364,7 +364,7 @@ graph TD
     D --> R2[Model / Spread / Funding Error]
     F --> R3[External Exchange Risk]
     C --> R4[Protocol / Smart Contract Risk]
-    C --> R5[SIM Market Risk\n(Token repricing)]
+    C --> R5[SYMM Market Risk\n(Token repricing)]
   end
 
   R1 --> G[Solver PnL Volatility]
@@ -374,7 +374,7 @@ graph TD
   G --> H[Solver Capital Drawdown\n(not protocol‑wide insolvency)]
 
   R4 --> I[Systemic Protocol Loss]
-  R5 --> J[SIM Price Moves\n(borne by same holders either way)]
+  R5 --> J[SYMM Price Moves\n(borne by same holders either way)]
 ```
 
 ---
@@ -423,12 +423,12 @@ RCE_V / RCE_I ≈ (5 / 0.8033) × 15 ≈ 6.224 × 15 ≈ 93.36
 
 ```mermaid
 graph TD
-  A[Imperial\nsysLev_I ≈ 0.80x] --> C[Capital Efficiency Ratio\nsysLev_V / sysLev_I ≈ 6.22x]
-  B[Vibecaps\nsysLev_V = 5x] --> C
+  A["Imperial\nsysLev_I ≈ 0.80x"] --> C["Capital Efficiency Ratio\nsysLev_V / sysLev_I ≈ 6.22x"]
+  B["Vibecaps\nsysLev_V = 5x"] --> C
 
-  D[USDC vs SIM Risk Premium\nr_I / r_V ≈ 15x] --> E[Risk‑Adjusted Multiplier]
+  D["USDC vs SYMM Risk Premium\nr_I / r_V ≈ 15x"] --> E[Risk‑Adjusted Multiplier]
 
-  C --> F[Overall RCE Ratio\n(6.22 × 15 ≈ 93.36)]
+  C --> F["Overall RCE Ratio\n(6.22 × 15 ≈ 93.36)"]
   E --> F
 ```
 
@@ -479,13 +479,13 @@ Below this level, rational LPs will either:
 
 ### 6.2 Vibecaps
 
-For Vibecaps, SIM inventory providers are:
+For Vibecaps, SYMM inventory providers are:
 
 - the protocol team,
 - early whales,
 - strategic holders.
 
-They are not underwriting external capital risk; they are re‑packaging their existing SIM exposure into a structure that:
+They are not underwriting external capital risk; they are re‑packaging their existing SYMM exposure into a structure that:
 
 - enables perps and deeper liquidity,
 - potentially increases organic volume and fees,
@@ -522,7 +522,7 @@ The analysis here is intentionally stylized:
 - Exact probabilities and loss severities (*p_j*, *L_j*) are not empirically estimated; they are scenario‑based.
 - Smart‑contract and oracle risks exist for both architectures.
 - Vibecaps still needs careful design of funding rates, inventory management and liquidation logic to avoid solver insolvency.
-- In extreme conditions (e.g. SIM → 0 overnight), SIM stakers lose value irrespective of protocol design; Vibecaps does not "remove" risk, it concentrates it back where it belongs: with token holders.
+- In extreme conditions (e.g. SYMM → 0 overnight), SYMM stakers lose value irrespective of protocol design; Vibecaps does not "remove" risk, it concentrates it back where it belongs: with token holders.
 
 Nonetheless, the qualitative conclusion is robust: any architecture that relies on external USDC to underwrite high‑leverage perps on illiquid low‑caps will have very poor risk‑adjusted capital efficiency relative to a system where the native token itself is the inventory.
 
@@ -534,12 +534,12 @@ We formalized and compared the risk and capital structures of:
 
 - **Imperial** – a delta‑neutral, USDC‑backed perp protocol requiring LP deposits and a 4% OI backstop in USDC, yielding system leverage ≈0.8× and implying high required APR (80–150%) for USDC LPs given 30–50% expected protocol loss.
 
-- **Vibecaps** – a token‑backed, solver‑based perpetual model where SIM inventory from projects/whales supports leverage of 5–10× without requiring structural USDC backstops. SIM stakers already bear token risk and can rationally accept much lower explicit APR (5–10%).
+- **Vibecaps** – a token‑backed, solver‑based perpetual model where SYMM inventory from projects/whales supports leverage of 5–10× without requiring structural USDC backstops. SYMM stakers already bear token risk and can rationally accept much lower explicit APR (5–10%).
 
 Combining:
 
 - a 6.2× advantage in raw system leverage, and
-- a 15× advantage in cost of capital (USDC vs SIM),
+- a 15× advantage in cost of capital (USDC vs SYMM),
 
 Vibecaps achieves an estimated 93× higher risk‑adjusted capital efficiency than Imperial.
 
